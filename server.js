@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.get('/images/random', (req, res) => {
-    getRandomImage()
+    res.sendFile(getRandomImage())
 });
 
 indexImages();
