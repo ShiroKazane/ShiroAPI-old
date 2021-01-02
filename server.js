@@ -12,8 +12,8 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname, '/index.html');
+app.get('/images/random', (req, res) => {
+    getRandomImage()
 });
 
 indexImages();
