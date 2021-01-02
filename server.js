@@ -12,10 +12,6 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.get('/images/random', (req, res) => {
-    getRandomImage()
-});
-
 indexImages();
 
 console.log('Loaded ' + images.length + ' images.')
@@ -26,15 +22,6 @@ function indexImages() {
     files.forEach(value => images.push("./images" + '\\' + value))
 }
 
-function getRandomImage() {
-    return fs.createReadStream(images[rnd(0, images.length)])
-}
-
-function rnd(min, max) {
-    return Math.floor(Math.random() * (max - min) + min)
-}
-
 module.exports = {
-    indexImages: indexImages(),
-    getRandomImage: getRandomImage()
+    indexImages: indexImages()
 };
