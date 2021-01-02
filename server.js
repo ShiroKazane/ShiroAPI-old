@@ -7,7 +7,7 @@ const port = process.env.PORT || 8080;
 const app = express();
 const images = [];
 
-app.get('/', res => {
+app.use('/', res => {
     res.json(images.toString());
 });
 
