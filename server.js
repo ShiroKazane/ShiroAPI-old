@@ -12,6 +12,10 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+app.use(function(err, req, res) {
+    res.status(404).sendFile(__dirname, '/404.html');
+});
+
 indexImages();
 
 console.log('Loaded ' + images.length + ' images.')
