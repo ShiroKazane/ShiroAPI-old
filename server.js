@@ -7,12 +7,16 @@ const port = process.env.PORT || 8080;
 const app = express();
 const images = [];
 
+app.get('/', res => {
+    res.json(images.toString());
+});
+
 app.use('/images', express.static(path.join(__dirname, '/images')))
 app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-app.use(function(err, req, res) {
+app.use(res => {
     res.status(404).sendFile(__dirname, '/404.html');
 });
 
