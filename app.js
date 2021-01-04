@@ -39,12 +39,12 @@ app.post('/upload', upload.single('image'), (req, res) => {
   var c;
   Images.findOne({}, (err, data) => {
     if (data) {
-      c = data.id + 1;
+      c = Number(data.id_key) + 1;
     } else {
       c = 1;
     }
     var images = new Images({
-      id: c,
+      id_key: String(c),
       url: `https://cdn.kairocafe.xyz/images/${req.file.filename}`,
     });
     images.save((err, Person) => {
