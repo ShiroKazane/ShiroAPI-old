@@ -21,11 +21,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage
-})
+}).single('image');
 
+app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/images', express.static('images'));
+app.get('/', (req, res) => res.render('index'));
 app.get('/images', (req, res) => {
   Images.find({}, (err, data) => {
     if (err) {
@@ -35,38 +37,39 @@ app.get('/images', (req, res) => {
     }
   })
 })
-app.post('/upload', upload.single('image'), (req, res) => {
-  var c;
-  Images.findOne({}, (err, data) => {
-    if (data) {
-      c = Number(data.id_key) + 1;
+app.post('/upload', (req, res) => {
+  upload(req, res, (err) => {
+    if (err) {
+      res.render('index', {
+        message: err.message
+      })
+    } else if (req.file == undefined) {
+      res.render('index', {
+        message: 'Error: No file selected!'
+      })
     } else {
-      c = 1;
+      var c;
+      Images.findOne({}, (err, data) => {
+        if (data) {
+          c = Number(data.id_key) + 1;
+        } else {
+          c = 1;
+        }
+        var images = new Images({
+          id_key: String(c),
+          url: `https://cdn.kairocafe.xyz/images/${req.file.filename}`,
+        });
+        images.save((err, Person) => {
+          if (err) console.log(err);
+        });
+      }).sort({ _id: -1 }).limit(1);
+      res.render('index', {
+          url: `https://cdn.kairocafe.xyz/images/${req.file.filename}`
+      })
     }
-    var images = new Images({
-      id_key: String(c),
-      url: `https://cdn.kairocafe.xyz/images/${req.file.filename}`,
-    });
-    images.save((err, Person) => {
-      if (err) console.log(err);
-    });
-  }).sort({ _id: -1 }).limit(1);
-  res.json({
-      success: 200,
-      url: `https://cdn.kairocafe.xyz/images/${req.file.filename}`
   })
 })
 
-function errHandler(err, req, res, next) {
-  if (err instanceof multer.MulterError) {
-    res.json({
-      success: 404,
-      message: err.message
-    })
-  }
-}
-
-app.use(errHandler);
 app.listen(PORT, () => {
   console.log('Express is running on PORT: ', PORT);
 })
