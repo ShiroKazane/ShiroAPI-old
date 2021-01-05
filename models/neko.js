@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const imagesSchema = new Schema({
+const nekoSchema = new Schema({
   id_key: {
     type: String
   },
@@ -21,6 +21,6 @@ const imagesSchema = new Schema({
   }
 })
 
-Images = mongoose.model('Images', imagesSchema);
+Neko = mongoose.model('Neko', nekoSchema);
 
-module.exports = Images;
+module.exports = Neko;
