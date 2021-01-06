@@ -27,23 +27,23 @@ const upload = multer({
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   }}).single('neko');
-
-  function checkFileType(file, cb) {
-    const filetypes = /jpeg|jpg|png|gif/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-
-    if(mimetype && extname){
-      return cb(null,true);
-    } else {
-      cb('Error: Only image are allowed!');
-    }
+  
+function checkFileType(file, cb) {
+  const filetypes = /jpeg|jpg|png|gif/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+  
+  if(mimetype && extname){
+    return cb(null,true);
+  } else {
+    cb(new Error('Error: Only image are allowed!'));
   }
+}
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use('/', express.static('public'));
+app.use(express.static('public'));
 app.get('/', (req, res) => res.render('index'));
 app.get('/list', (req, res) => {
   Neko.find({}, (err, data) => {
@@ -54,7 +54,7 @@ app.get('/list', (req, res) => {
     }
   })
 })
-app.post('/upload', (req, res) => {
+app.post('/', (req, res) => {
   upload(req, res, (err) => {
     if (err) {
       res.render('index', {
@@ -81,10 +81,14 @@ app.post('/upload', (req, res) => {
         });
       }).sort({ _id: -1 }).limit(1);
       res.render('index', {
-          url: `https://cdn.kairocafe.xyz/neko/${req.file.filename}`
+        file: `https://cdn.kairocafe.xyz/neko/${req.file.filename}`
       })
     }
   })
+})
+
+app.all('*', function (req, res, next) {
+  res.status(404).render('404')
 })
 
 app.listen(PORT, () => {
