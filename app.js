@@ -24,43 +24,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
-app.get('/:type', (req, res) => {
-  res.render('index', {
-    type: req.params.type
-  });
-});
+app.get('/', (req, res) => {
+  res.send('Nothing.')
+})
 
-// Image
-
-const image = multer({
-  storage: storage,
-  fileFilter: function (req, file, cb) {
-    checkFileType(file, cb);
-  }
-}).single('image')
-
-app.post('/image', (req, res) => {
-  image(req, res, (err) => {
-    if (err) {
-      res.render('index', {
-        message: err.message,
-        type: req.path
-      })
-    } else if (req.file == undefined) {
-      res.render('index', {
-        message: 'Error: No file selected!',
-        type: req.path
-      })
-    } else {
-      res.render('index', {
-        file: `https://cdn.kairocafe.xyz/${req.path}/${req.file.filename}`,
-        type: req.path
-      });
-    }
-  })
-});
+app.get('/api', (req, res) => {
+  const list = ['neko'];
+  res.json(list)
+})
 
 // Neko
+
+app.get('/neko', (req, res) => {
+  res.render('index', {
+    type: 'neko'
+  });
+});
 
 const neko = multer({
   storage: storage,
