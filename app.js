@@ -4,30 +4,119 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const Neko = require('./models/neko.js')
 const PORT = process.env.PORT || 8080;
 
-mongoose.connect('mongodb+srv://Kairo:DiaPandaKu@kairo.efvo4.mongodb.net/kairo-api', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
-
 const storage = multer.diskStorage({
-  destination: './public/neko',
+  destination: (req, file, cb) => {
+    let type = req.path;
+    let param = `./public${type}`
+    cb(null, param)
+  },
   filename: (req, file, cb) => {
-    fs.readdir(('./public/neko'), (err, files) => {
+    fs.readdir(('./public/' + file.fieldname), (err, files) => {
       cb(null, file.fieldname + '_' + (parseInt(files.length, 10) + 1) + path.extname(file.originalname))
     })
   }
 })
 
-const upload = multer({
+app.set('view engine', 'ejs');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static('public'));
+
+app.get('/:type', (req, res) => {
+  res.render('index', {
+    type: req.params.type
+  });
+});
+
+// Image
+
+const image = multer({
   storage: storage,
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
-  }}).single('neko');
-  
+  }
+}).single('image')
+
+app.post('/image', (req, res) => {
+  image(req, res, (err) => {
+    if (err) {
+      res.render('index', {
+        message: err.message,
+        type: req.path
+      })
+    } else if (req.file == undefined) {
+      res.render('index', {
+        message: 'Error: No file selected!',
+        type: req.path
+      })
+    } else {
+      res.render('index', {
+        file: `https://cdn.kairocafe.xyz/${req.path}/${req.file.filename}`,
+        type: req.path
+      });
+    }
+  })
+});
+
+// Neko
+
+const neko = multer({
+  storage: storage,
+  fileFilter: function (req, file, cb) {
+    checkFileType(file, cb);
+  }
+}).single('neko')
+
+app.post('/neko', (req, res) => {
+  neko(req, res, (err) => {
+    if (err) {
+      res.render('index', {
+        message: err.message,
+        type: req.path
+      })
+    } else if (req.file == undefined) {
+      res.render('index', {
+        message: 'Error: No file selected!',
+        type: req.path
+      })
+    } else {
+      res.render('index', {
+        file: `https://cdn.kairocafe.xyz/${req.path}/${req.file.filename}`,
+        type: req.path
+      });
+    }
+  })
+});
+
+app.get('/api/:id', (req, res) => {
+  let param = './public/' + req.params.id;
+  if (fs.existsSync(param)) {
+    let requiredCount = 3;
+    let files = fs.readdirSync('./public/' + req.params.id);
+    
+    while(requiredCount-- && files.length) {
+      let length = files.length;
+      let index = Math.floor(Math.random() * length);
+      let result = files.splice(index, 1);
+      return res.send({
+        url: 'https://cdn.kairocafe.xyz/' + req.params.id + '/' + result
+      })
+    }
+  } else {
+    return res.status(404).render('404');
+  }
+});
+
+app.all('*', function (req, res, next) {
+  res.status(404).render('404');
+})
+
+app.listen(PORT, () => {
+  console.log('Express is running on PORT: ', PORT);
+})
+
 function checkFileType(file, cb) {
   const filetypes = /jpeg|jpg|png|gif/;
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
@@ -39,58 +128,3 @@ function checkFileType(file, cb) {
     cb(new Error('Error: Only image are allowed!'));
   }
 }
-
-app.set('view engine', 'ejs');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static('public'));
-app.get('/', (req, res) => res.render('index'));
-app.get('/list', (req, res) => {
-  Neko.find({}, (err, data) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.json(data)
-    }
-  })
-})
-app.post('/', (req, res) => {
-  upload(req, res, (err) => {
-    if (err) {
-      res.render('index', {
-        message: err.message
-      })
-    } else if (req.file == undefined) {
-      res.render('index', {
-        message: 'Error: No file selected!'
-      })
-    } else {
-      var c;
-      Neko.findOne({}, (err, data) => {
-        if (data) {
-          c = Number(data.id_key) + 1;
-        } else {
-          c = 1;
-        }
-        var neko = new Neko({
-          id_key: String(c),
-          url: `https://cdn.kairocafe.xyz/neko/${req.file.filename}`,
-        });
-        neko.save((err, Person) => {
-          if (err) console.log(err);
-        });
-      }).sort({ _id: -1 }).limit(1);
-      res.render('index', {
-        file: `https://cdn.kairocafe.xyz/neko/${req.file.filename}`
-      })
-    }
-  })
-})
-
-app.all('*', function (req, res, next) {
-  res.status(404).render('404')
-})
-
-app.listen(PORT, () => {
-  console.log('Express is running on PORT: ', PORT);
-})
