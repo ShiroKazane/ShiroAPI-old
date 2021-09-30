@@ -3,9 +3,11 @@ const app = express();
 const path = require('path');
 const fs = require('fs');
 const bodyParser = require('body-parser');
+const favicon = require('serve-favicon');
 const PORT = process.env.PORT || 8080;
 
 app.set('view engine', 'ejs');
+app.use(favicon(__dirname + '/assets/favicon.ico'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
@@ -29,8 +31,8 @@ app.get('/api/:id', (req, res) => {
       let length = files.length;
       let index = Math.floor(Math.random() * length);
       let result = files.splice(index, 1);
-      return res.send({
-        url: 'https://cdn.kairocafe.xyz/' + req.params.id + '/' + result
+      return res.json({
+        url: 'https://' + req.hostname + '/' + req.params.id + '/' + result
       })
     }
   } else {

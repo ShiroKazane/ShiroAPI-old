@@ -1,7 +1,7 @@
 {
   "name": "cdn",
   "version": "1.0.0",
-  "description": "Kairo's Cafe CDN",
+  "description": "Shiro CDN",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,18 +9,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KizutoChan/cdn.git"
+    "url": "git+https://github.com/AzusaAi/cdn.git"
   },
-  "author": "Kairo",
+  "author": "AzusaAi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/KizutoChan/cdn/issues"
+    "url": "https://github.com/AzusaAi/cdn/issues"
   },
-  "homepage": "https://github.com/KizutoChan/cdn#readme",
+  "homepage": "https://github.com/AzusaAi/cdn#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "ejs": "^3.1.6",
     "express": "^4.17.1",
     "fs": "0.0.1-security",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "serve-favicon": "^2.5.0"
   }
 }
