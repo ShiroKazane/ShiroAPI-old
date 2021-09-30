@@ -1,7 +1,7 @@
 {
-  "name": "cdn",
+  "name": "shiro-api",
   "version": "1.0.0",
-  "description": "Shiro CDN",
+  "description": "ShiroAPI",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AzusaAi/cdn.git"
+    "url": "git+https://github.com/AzusaAi/ShiroAPI.git"
   },
   "author": "AzusaAi",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/AzusaAi/cdn/issues"
+    "url": "https://github.com/AzusaAi/ShiroAPI/issues"
   },
-  "homepage": "https://github.com/AzusaAi/cdn#readme",
+  "homepage": "https://github.com/AzusaAi/ShiroAPI#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
     "ejs": "^3.1.6",
