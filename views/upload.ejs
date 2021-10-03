@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShiroAPI - Upload <%= id.charAt(0).toUpperCase() + id.substr(1).toLowerCase() %></title>
+    <style>
+      * {
+        margin: 0;
+        box-sizing: border-box;
+        transition: all 0.35s linear;
+        font-family: sans-serif;
+      }
+
+      body {
+        height: 90vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #242424;
+      }
+      label {
+        padding: 16px 48px;
+        border: 3px solid #fff;
+        border-radius: 48px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: bold;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      label:hover {
+        transform: scale(1.04);
+      }
+
+      label.active {
+        background-color: #fff;
+        color: #242424;
+      }
+
+      label span {
+        font-weight: normal;
+      }
+    </style>
+</head>
+<body>
+  <div class="">
+    <form action="/upload/<%= id %>" enctype="multipart/form-data" method="POST" >
+      <input type="file" name="upload" id="file-input" accept="image/*" onchange="form.submit()" hidden />
+      <label for="file-input" id="file-label">Choose file</label>
+      <div>
+    </form>
+  </div>
+  <script>
+    var loader = function(e) {
+      let file = e.target.files;
+
+      let show = "<span>Selected file : </span>" + file[0].name;
+
+      let output = document.getElementById("file-label");
+      output.innerHTML = show;
+      output.classList.add("active");
+    };
+
+    let fileInput = document.getElementById("file-input");
+    fileInput.addEventListener("change", loader);
+  </script>
+</body>
+</html>
