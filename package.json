@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AzusaAi/ShiroAPI.git"
+    "url": "git+https://github.com/ShiroKazane/ShiroAPI.git"
   },
-  "author": "AzusaAi",
+  "author": "ShiroKazane",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/AzusaAi/ShiroAPI/issues"
+    "url": "https://github.com/ShiroKazane/ShiroAPI/issues"
   },
-  "homepage": "https://github.com/AzusaAi/ShiroAPI#readme",
+  "homepage": "https://github.com/ShiroKazane/ShiroAPI#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
     "ejs": "^3.1.6",
