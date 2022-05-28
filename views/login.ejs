@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <title>ShiroAPI - Login</title>
+    <style>
+        a {
+            text-decoration: none;
+        }
+
+        body {
+            background: #242424;
+            background-repeat: no-repeat;
+        }
+
+        label {
+            font-family: "Raleway", sans-serif;
+            font-size: 11pt;
+        }
+
+        #forgot-pass {
+            color: #2dbd6e;
+            font-family: "Raleway", sans-serif;
+            font-size: 10pt;
+            margin-top: 3px;
+            text-align: right;
+        }
+
+        #card {
+            background: #fbfbfb;
+            border-radius: 8px;
+            box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.65);
+            height: 410px;
+            margin: 8.1rem auto 8.1rem auto;
+            width: 329px;
+        }
+
+        #card-content {
+            padding: 12px 44px;
+        }
+
+        #card-title {
+            font-family: "Raleway Thin", sans-serif;
+            letter-spacing: 4px;
+            padding-bottom: 23px;
+            padding-top: 13px;
+            text-align: center;
+        }
+
+        #submit-btn {
+            background: #242424;
+            border: none;
+            border-radius: 21px;
+            box-shadow: 0px 1px 8px #242424;
+            cursor: pointer;
+            color: white;
+            font-family: "Raleway SemiBold", sans-serif;
+            height: 42.3px;
+            margin: 0 auto;
+            margin-top: 50px;
+            transition: 0.25s;
+            width: 153px;
+        }
+
+        #submit-btn:hover {
+            box-shadow: 0px 1px 18px #222222;
+        }
+
+        .form {
+            align-items: left;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-border {
+            background: #242424;
+            height: 1px;
+            width: 100%;
+        }
+
+        .form-content {
+            background: #fbfbfb;
+            border: none;
+            outline: none;
+            padding-top: 14px;
+        }
+
+        .underline-title {
+            background: #242424;
+            height: 2px;
+            margin: -1.1rem auto 0 auto;
+            width: 89px;
+        }
+    </style>
+</head>
+<body>
+    <div id="card">
+        <div id="card-content">
+            <div id="card-title">
+                <h2>Login</h2>
+                <div class="underline-title"></div>
+            </div>
+            <form id="login" class="form">
+                <label for="username" style="padding-top: 13px">&nbsp;Username</label>
+                <input type="text" name="username" autocomplete="on" id="username" class="form-content" required />
+                <div class="form-border"></div>
+    
+                <label for="password" style="padding-top: 22px">&nbsp;Password</label>
+                <input type="password" name="password" id="password" class="form-content" required />
+                <div class="form-border"></div>
+    
+                <input type="submit" name="submit" id="submit-btn" value="LOGIN" />
+            </form>
+        </div>
+    </div>
+
+    <script>
+			if (localStorage.getItem("TOKEN")) {
+				window.location.href = "/upload";
+			}
+       const form = document.getElementById('login') ;
+       form.addEventListener('submit', login);
+
+       async function login(event) {
+           event.preventDefault()
+           const username = document.getElementById('username').value;
+           const password = document.getElementById('password').value;
+
+           const result = await fetch('/login', {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/json'
+               },
+               body: JSON.stringify({
+                   username,
+                   password
+               })
+           }).then((res) => res.json());
+
+           if (result.status === 'ok') {
+               localStorage.setItem('TOKEN', result.data)
+               window.location.href = "/upload";
+           } else {
+               alert(result.error)
+           }
+       }
+
+    </script>
+
+</body>
+</html>

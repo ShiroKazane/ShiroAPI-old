@@ -5,7 +5,16 @@ const fs = require('fs');
 const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
 const multer = require('multer');
+const mongoose = require('mongoose');
+const User = require('./model/user');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const PORT = process.env.PORT || 8080;
+
+mongoose.connect(process.env.MONGO_URI, {
+	useNewUrlParser: true,
+	useUnifiedTopology: true
+})
 
 app.set('view engine', 'ejs');
 app.use(favicon(__dirname + '/assets/favicon.ico'));
@@ -48,6 +57,28 @@ app.get('/', (req, res) => {
   res.render('index');
 })
 
+app.get('/login', (req, res) => {
+	res.render('login');
+})
+
+app.post('/login', async (req, res) => {
+	const { username, password } = req.body;
+	const user = await User.findOne({ username }).lean();
+
+	if (!user) {
+		return res.json({ status: 'error', error: 'Invalid username/password' })
+	}
+
+	if (await bcrypt.compare(password, user.password)) {
+		const TOKEN = jwt.sign({
+			id: user._id,
+			username: user.username
+		}, process.env.JWT_SECRET)
+		return res.json({ status: 'ok', data: TOKEN })
+	}
+	res.json({ status: 'error', error: 'Invalid username/password' })
+})
+
 app.get('/api', (req, res) => {
   const list = fs.readdirSync('./public');
   res.json(list);
@@ -72,15 +103,19 @@ app.get('/api/:id', (req, res) => {
   }
 });
 
+app.get('/upload', (req, res) => {
+  res.render('uploadList');
+})
+
 app.get('/upload/:id', (req, res) => {
-  let param = './public/' + req.params.id;
-  if (fs.existsSync(param)) {
-    res.render('upload', {
-      id: req.params.id
-    });
-  } else {
-    return res.status(404).render('404');
-  }
+	let param = './public/' + req.params.id;
+	if (fs.existsSync(param)) {
+		res.render('upload', {
+			id: req.params.id
+		});
+	} else {
+		return res.status(404).render('404');
+	}
 })
 
 app.post('/upload/neko', nekoUpload.single('upload'), (req, res) => {
@@ -93,6 +128,10 @@ app.post('/upload/baka', bakaUpload.single('upload'), (req, res) => {
   res.render('upload', {
     id: 'baka'
   });
+})
+
+app.get('/status', (req, res) => {
+	res.redirect('https://stats.uptimerobot.com/5A5GGUMMZK');
 })
 
 app.all('*', function (req, res, next) {

@@ -52,7 +52,10 @@
       <div>
     </form>
   </div>
-  <script>
+	<script>
+		if (!localStorage.getItem("TOKEN")) {
+			window.location.href = "/login";
+		}
     var loader = function(e) {
       let file = e.target.files;
 
