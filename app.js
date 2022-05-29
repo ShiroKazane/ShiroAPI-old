@@ -5,10 +5,12 @@ const fs = require('fs');
 const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
 const multer = require('multer');
+const sharp = require('sharp');
 const mongoose = require('mongoose');
 const User = require('./model/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const rimraf = require('rimraf');
 const PORT = process.env.PORT || 8080;
 
 mongoose.connect(process.env.MONGO_URI, {
@@ -23,15 +25,38 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.use('/images', express.static('private'));
 
+fs.readdir('./uploads', function(err, files) {
+  files.forEach(function(file, index) {
+    fs.stat(path.join('./uploads', file), function(err, stat) {
+      var endTime, now;
+      if (err) {
+        return console.error(err);
+      }
+      now = new Date().getTime();
+      endTime = new Date(stat.ctime).getTime() + 5000;
+      if (now > endTime) {
+        return rimraf(path.join('./uploads', file), function(err) {
+          if (err) {
+            return console.error(err);
+          }
+        });
+      }
+    });
+  });
+	console.log('Uploaded image deleted')
+});
+
 // Neko
 
 let nekoStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './public/neko')
+    // cb(null, './public/neko')
+		cb(null, './uploads')
   },
   filename: function (req, file, cb) {
-    let files = fs.readdirSync('./public/neko');
-    cb(null, 'neko_' + ++files.length + path.extname(file.originalname))
+    // let files = fs.readdirSync('./public/neko');
+		// cb(null, 'neko_' + ++files.length + path.extname(file.originalname))
+    cb(null, file.originalname)
   }
 })
 let nekoUpload = multer({ storage: nekoStorage })
@@ -42,11 +67,13 @@ let nekoUpload = multer({ storage: nekoStorage })
 
 let bakaStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './public/baka')
+    // cb(null, './public/baka')
+		cb(null, './uploads')
   },
   filename: function (req, file, cb) {
-    let files = fs.readdirSync('./public/baka');
-    cb(null, 'baka_' + ++files.length + path.extname(file.originalname))
+    // let files = fs.readdirSync('./public/baka');
+    // cb(null, 'baka_' + ++files.length + path.extname(file.originalname))
+		cb(null, file.originalname)
   }
 })
 let bakaUpload = multer({ storage: bakaStorage })
@@ -122,12 +149,24 @@ app.post('/upload/neko', nekoUpload.single('upload'), (req, res) => {
   res.render('upload', {
     id: 'neko'
   });
+	let files = fs.readdirSync('./public/neko');
+	let compressedImage = path.join('./public/neko/neko_' + ++files.length + '.jpg')
+	sharp(req.file.path).jpeg({
+		quality: 80,
+		chromaSubsampling: '4:4:4'
+	}).toFile(compressedImage)
 })
 
 app.post('/upload/baka', bakaUpload.single('upload'), (req, res) => {
   res.render('upload', {
     id: 'baka'
   });
+	let files = fs.readdirSync('./public/baka');
+	let compressedImage = path.join('./public/baka/baka_' + ++files.length + '.jpg')
+	sharp(req.file.path).jpeg({
+		quality: 80,
+		chromaSubsampling: '4:4:4'
+	}).toFile(compressedImage)
 })
 
 app.get('/status', (req, res) => {
