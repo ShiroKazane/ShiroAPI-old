@@ -150,7 +150,7 @@ app.post('/upload/neko', nekoUpload.single('upload'), (req, res) => {
     id: 'neko'
   });
 	let files = fs.readdirSync('./public/neko');
-	let compressedImage = path.join('./public/neko/neko_' + ++files.length + '.jpg')
+	let compressedImage = path.join('./public/neko/neko_' + ++files.length + path.extname(req.file.path))
 	sharp(req.file.path).jpeg({
 		quality: 80,
 		chromaSubsampling: '4:4:4'
@@ -162,7 +162,7 @@ app.post('/upload/baka', bakaUpload.single('upload'), (req, res) => {
     id: 'baka'
   });
 	let files = fs.readdirSync('./public/baka');
-	let compressedImage = path.join('./public/baka/baka_' + ++files.length + '.jpg')
+	let compressedImage = path.join('./public/baka/baka_' + ++files.length + path.extname(req.file.path))
 	sharp(req.file.path).jpeg({
 		quality: 80,
 		chromaSubsampling: '4:4:4'
